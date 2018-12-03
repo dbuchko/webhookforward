@@ -7,8 +7,6 @@ import (
     "fmt"
     "log"
     "net/http"
-//    "net/url"
-   
 )
 
 const (
@@ -18,7 +16,7 @@ type test_struct struct {
      Test string
 } 
 
-func hello(w http.ResponseWriter, r *http.Request) {
+func handleForward(w http.ResponseWriter, r *http.Request) {
     if r.URL.Path != "/" {
         http.Error(w, "404 not found.", http.StatusNotFound)
         return
@@ -34,14 +32,10 @@ func hello(w http.ResponseWriter, r *http.Request) {
            if err !=nil {panic(err)}  
         fmt.Println("The body was:",string(reqBody))
         var  postJson = "{\"text\":\""+string(reqBody)+"\"}"   
-//	var postJson = payload={"text": "This is a line of text in a channel.\nAnd this is another line of text."}
         fmt.Println("Sending json: %s\n", postJson)
-       postContent := bytes.NewBuffer([]byte(postJson))  
+        postContent := bytes.NewBuffer([]byte(postJson))  
 
-    //    data := url.Values{}
-    //    data.Set("payload", postJson)
-    //    payloadbody := bytes.NewBufferString(data.Encode())
-
+   
 	resp, err := http.Post(forwardurl, "application/json", postContent)
             if err != nil { panic(err) }
 
@@ -62,7 +56,7 @@ func main() {
         port = DEFAULT_PORT
     }
 
-    http.HandleFunc("/", hello)
+    http.HandleFunc("/", handleForward)
  
 
     fmt.Printf("Starting server for testing HTTP POST...\n")
