@@ -7,14 +7,13 @@ import (
     "fmt"
     "log"
     "net/http"
+    "encoding/json"
+
 )
 
 const (
       DEFAULT_PORT = "8080"
 )
-type test_struct struct {
-     Test string
-} 
 
 func handleForward(w http.ResponseWriter, r *http.Request) {
     if r.URL.Path != "/" {
@@ -31,10 +30,21 @@ func handleForward(w http.ResponseWriter, r *http.Request) {
         reqBody, err := ioutil.ReadAll(r.Body)
            if err !=nil {panic(err)}  
         fmt.Println("The body was:",string(reqBody))
-        var  postJson = "{\"text\":\""+string(reqBody)+"\"}"   
+        
+   
+         var f interface{}
+         err3 := json.Unmarshal(reqBody,&f)
+                 if err3 !=nil { panic (err) }
+         m := f.(map[string]interface{})
+
+         messageSubject := m["subject"]
+       //messageBody := m["body"]
+         messageTopic := m["topic"]
+         messageTimestamp := m["timestamp"]
+
+         var  postJson = "{\"text\":\" Subject:"+messageSubject.(string)+"\n Time:"+messageTimestamp.(string)+ " \n Topic:"+messageTopic.(string)+"\"}"   
         fmt.Println("Sending json: %s\n", postJson)
         postContent := bytes.NewBuffer([]byte(postJson))  
-
    
 	resp, err := http.Post(forwardurl, "application/json", postContent)
             if err != nil { panic(err) }
