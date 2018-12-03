@@ -12,3 +12,8 @@ cf push whproxy -c'./proxy' -b binary_buildpack -k 64m -m 64m
 Set the address to foward to:
 
 cf set-env whproxy FORWARD_URL https://myslackwebhookurl
+
+<p>
+  Can test by curling the app like:
+  <p>
+  curl --data-binary '{\"Test Message\":\"Test Message Body\"}'  -H "Content-Type: application/json" --request POST https://whproxy.<Apps Route>
