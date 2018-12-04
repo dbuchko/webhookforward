@@ -8,7 +8,7 @@ import (
     "log"
     "net/http"
     "encoding/json"
-
+    "strings"
 )
 
 const (
@@ -26,8 +26,8 @@ func handleForward(w http.ResponseWriter, r *http.Request) {
  	fmt.Printf("Received a post. forwarding \n");
         forwardurl := os.Getenv("FORWARD_URL")
         fmt.Println("URL read from FORWARD_URL:>", forwardurl)
-
-        reqBody, err := ioutil.ReadAll(r.Body)
+        
+                reqBody, err := ioutil.ReadAll(r.Body)
            if err !=nil {panic(err)}  
         fmt.Println("The body was:",string(reqBody))
         
@@ -38,7 +38,7 @@ func handleForward(w http.ResponseWriter, r *http.Request) {
          m := f.(map[string]interface{})
 
          messageSubject := m["subject"]
-       //messageBody := m["body"]
+//         messageBody := m["body"]
          messageTopic := m["topic"]
          messageTimestamp := m["timestamp"]
 
@@ -52,6 +52,13 @@ func handleForward(w http.ResponseWriter, r *http.Request) {
         fmt.Printf("Status: %s\n", resp.Status)
         buf, _ := ioutil.ReadAll(resp.Body)
         fmt.Println(string(buf))  
+           if strings.Compare("200 OK",resp.Status) != 0 {
+                var postJson = "{\"text\":\" Subject: Error in webhookforwarder - "+resp.Status+" received when forwarding "+string(buf)+"\"}"
+                postContent := bytes.NewBuffer([]byte(postJson))
+                resp,err := http.Post(forwardurl,"application/json",postContent)
+                if err !=nil {panic (err)}
+                fmt.Println("Status of error sending to slack %s\n", resp.Status)
+            }
       
     default:
         fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")

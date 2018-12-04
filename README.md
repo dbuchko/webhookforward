@@ -17,3 +17,8 @@ cf set-env whproxy FORWARD_URL https://myslackwebhookurl
   Can test by curling the app like:
   <p>
   curl --data-binary '{\"Test Message\":\"Test Message Body\"}'  -H "Content-Type: application/json" --request POST https://whproxy.<Apps Route>
+<p>
+or for a more complex sample:
+curl --data-binary "@sampleMessage"\
+  -H "Content-Type: application/json" --request POST https://wh\
+proxy.<Apps Route>
