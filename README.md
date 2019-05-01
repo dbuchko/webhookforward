@@ -7,7 +7,7 @@ env GOOS=linux GOARCH=amd64 go build
     <p>
 Push to PCF using binary build pack with:
       <p>
-cf push whproxy -c'./proxy' -b binary_buildpack -k 64m -m 64m
+cf push whproxy -c'./webhookforward' -b binary_buildpack -k 64m -m 64m
 
 Set the address to foward to:
 
